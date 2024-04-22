@@ -18,6 +18,8 @@ import { Button } from '@mui/material'
 import ListCards from './ListCards/ListCards'
 import { mapOrder } from '~/utils/sort'
 
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 function Column({ column }) {
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -29,20 +31,37 @@ function Column({ column }) {
     setAnchorEl(null)
   }
   const orderedCard = mapOrder(column?.cards, column?.cardOrderIds, '_id')
+
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: column._id,
+    data: { ...column }
+  })
+
+  const dndkitColumnstyle = {
+    // touchAction:'none',
+    //use css.transform can make card stretch here
+    transform: CSS.Translate.toString(transform),
+    transition
+  }
   return (
     <>
       {/* Box column 1 */}
-      <Box sx={{
-        minWidth: '300px',
-        maxWidth: '300px',
-        bgcolor: (theme) => (
-          theme.palette.mode === 'dark' ? '#333643' : '#ebecf0'
-        ),
-        ml: 2,
-        borderRadius: '6px',
-        height: 'fit-content',
-        maxHeight: (theme) => `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
-      }}>
+      <Box
+        ref={setNodeRef}
+        style={dndkitColumnstyle}
+        {...attributes}
+        {...listeners}
+        sx={{
+          minWidth: '300px',
+          maxWidth: '300px',
+          bgcolor: (theme) => (
+            theme.palette.mode === 'dark' ? '#333643' : '#ebecf0'
+          ),
+          ml: 2,
+          borderRadius: '6px',
+          height: 'fit-content',
+          maxHeight: (theme) => `calc(${theme.trello.boardContentHeight} - ${theme.spacing(5)})`
+        }}>
         {/* Header column */}
         <Box sx={{
           height: (theme) => theme.trello.columnHeaderHeight,
@@ -118,7 +137,7 @@ function Column({ column }) {
             </Menu>
           </Box>
         </Box>
-        <ListCards cards={orderedCard}/>
+        <ListCards cards={orderedCard} />
         {/* Footer column */}
         <Box sx={{
           height: (theme) => theme.trello.columnFooterHeight,
