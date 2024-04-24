@@ -32,7 +32,7 @@ function Column({ column }) {
   }
   const orderedCard = mapOrder(column?.cards, column?.cardOrderIds, '_id')
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: column._id,
     data: { ...column }
   })
@@ -41,15 +41,18 @@ function Column({ column }) {
     // touchAction:'none',
     //use css.transform can make card stretch here
     transform: CSS.Translate.toString(transform),
-    transition
+    transition,
+    height: '100%',
+    opacity: isDragging ? 0.5 : undefined
   }
   return (
-    <>
+    <div
+      ref={setNodeRef}
+      style={dndkitColumnstyle}
+      {...attributes}
+    >
       {/* Box column 1 */}
       <Box
-        ref={setNodeRef}
-        style={dndkitColumnstyle}
-        {...attributes}
         {...listeners}
         sx={{
           minWidth: '300px',
@@ -152,7 +155,7 @@ function Column({ column }) {
           </Tooltip>
         </Box>
       </Box>
-    </>
+    </div>
   )
 }
 
